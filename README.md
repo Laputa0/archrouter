@@ -6,4 +6,4 @@ A router based on Archlinux.
 - kea-dhcp4-server
 
 ## DHCPV6 Server
-- kea-dhcp-server
+- kea-dhcp6-server
