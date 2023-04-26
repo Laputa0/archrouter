@@ -7,3 +7,6 @@ A router based on Archlinux.
 
 ## DHCPV6 Server
 - kea-dhcp6-server
+
+## DNS Server
+- bind
