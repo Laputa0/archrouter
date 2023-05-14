@@ -2,4 +2,4 @@
 Name=enp2s0
 
 [Network]
-Address=172.30.0.1/16
+Address=172.25.0.1/16
