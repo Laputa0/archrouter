@@ -45,3 +45,5 @@
 - 配置文件目录: `/etc/xray`
 
 ## network manager: systemd-networkd
+
+## ntp server: 未定
