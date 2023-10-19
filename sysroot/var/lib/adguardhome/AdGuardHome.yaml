@@ -119,8 +119,8 @@ filters:
 whitelist_filters: []
 user_rules: []
 dhcp:
-  enabled: true
-  interface_name: enp1s0
+  enabled: false
+  interface_name: ""
   local_domain_name: lan
   dhcpv4:
     gateway_ip: 172.20.0.1
@@ -128,10 +128,10 @@ dhcp:
     range_start: 172.20.0.2
     range_end: 172.20.255.255
     lease_duration: 86400
-    icmp_timeout_msec: 1000
+    icmp_timeout_msec: 0
     options: []
   dhcpv6:
-    range_start: fd0a::2
+    range_start: ""
     lease_duration: 86400
     ra_slaac_only: false
     ra_allow_slaac: false

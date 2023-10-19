@@ -1,0 +1,5 @@
+[Match]
+MACAddress=52:54:00:88:40:e8
+
+[Link]
+Name=wan

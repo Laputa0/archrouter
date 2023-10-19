@@ -1,0 +1,15 @@
+[Match]
+Type=loopback
+
+[Network]
+Address=127.0.0.1/8
+Address=::1/128
+
+[Route]
+Table=100
+Type=local
+Source=127.0.0.1
+
+[RoutingPolicyRule]
+Table=100
+FirewallMark=1

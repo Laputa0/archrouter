@@ -1,0 +1,6 @@
+[Match]
+Name=lan
+
+[Network]
+Address=172.20.0.1/16
+Address=fd14::1/48
