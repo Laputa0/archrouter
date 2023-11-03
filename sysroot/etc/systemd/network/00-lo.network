@@ -6,10 +6,20 @@ Address=127.0.0.1/8
 Address=::1/128
 
 [Route]
-Table=100
+Table=104
 Type=local
-Source=127.0.0.1
+Destination=0.0.0.0/0
+
+[Route]
+Table=106
+Type=local
+Destination=::/0
 
 [RoutingPolicyRule]
-Table=100
-FirewallMark=1
+Table=104
+FirewallMark=0x01
+
+[RoutingPolicyRule]
+Table=106
+FirewallMark=0x08
+

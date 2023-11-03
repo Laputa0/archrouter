@@ -26,8 +26,6 @@
     ```
 - 配置文件: `/etc/nftables.conf`
 
-## ipv6 SLAAC: [radvd](http://www.litech.org/radvd/)
-
 ## tftp server: [tftp-hap](https://www.kernel.org/pub/software/network/tftp/tftp-hpa/)
 - 安装
     ```shell
@@ -45,5 +43,7 @@
 - 配置文件目录: `/etc/xray`
 
 ## network manager: systemd-networkd
+
+## ipv6 send RA: systemd-networkd
 
 ## ntp server: 未定
