@@ -33,17 +33,21 @@
     ```
 - 配置文件: `/etc/conf.d/tftpd`
 
-## transprant proxy: [xray](https://github.com/XTLS/Xray-core)
+## transprant proxy: [xray](https://github.com/XTLS/Xray-core), [sing-box](https://github.com/SagerNet/sing-box)
 - 安装
     ```shell
+    # archlinux
     git clone https://aur.archlinux.org/xray.git
     cd xray
     makepkg -si
+
+    # debian
+    dpkg -i sing-box_xxx_arm64.deb
     ```
 - 配置文件目录: `/etc/xray`
 
 ## network manager: systemd-networkd
 
-## ipv6 send RA: systemd-networkd
+## ipv6 send RA: radvd
 
 ## ntp server: 未定
