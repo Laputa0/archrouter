@@ -1,0 +1,430 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "output": "",
+    "timestamp": true
+  },
+  "dns": {
+    "servers": [
+      {
+        "tag": "dns_block",
+        "address": "rcode://refused"
+      },
+      {
+        "tag": "dns_resolver",
+        "address": "223.5.5.5",
+        "address_strategy": "prefer_ipv4",
+        "detour": "net_direct"
+      },
+      {
+        "tag": "dns_direct",
+        "address": "https://dns.alidns.com/dns-query",
+        "address_resolver": "dns_resolver",
+        "address_strategy": "prefer_ipv4",
+        "detour": "net_direct"
+      },
+      {
+        "tag": "dns_proxy",
+        "address": "https://security.cloudflare-dns.com/dns-query",
+        "address_resolver": "dns_resolver",
+        "address_strategy": "prefer_ipv4",
+        "detour": "proxy_dns"
+      }
+    ],
+    "rules": [
+      {
+        "domain_regex": [
+          ".*fandom.com",
+          ".*114dns.com"
+        ],
+        "server": "dns_block"
+      },
+      {
+        "domain": [
+          "archrouter.top"
+        ],
+        "server": "dns_direct"
+      },
+      {
+        "rule_set": [
+          "geosite-cn"
+        ],
+        "server": "dns_direct"
+      }
+    ],
+    "final": "dns_proxy"
+  },
+  "inbounds": [
+    {
+      "type": "direct",
+      "tag": "dns-in",
+      "listen": "::",
+      "listen_port": 53,
+      "network": "udp"
+    },
+    {
+      "type": "tun",
+      "tag": "tun0",
+      "interface_name": "tun0",
+      "inet4_address": "172.19.0.1/16",
+      "inet6_address": "fd13::1/64",
+      "mtu": 9000,
+      "gso": false,
+      "stack": "mixed",
+      "auto_route": true,
+      "strict_route": true,
+      "sniff": true
+    },
+    {
+      "type": "socks",
+      "tag": "socks",
+      "listen": "::",
+      "listen_port": 10808,
+      "sniff": true,
+      "sniff_override_destination": true
+    },
+    {
+      "type": "http",
+      "tag": "http",
+      "listen": "::",
+      "listen_port": 10809,
+      "sniff": true,
+      "sniff_override_destination": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "cfwp2",
+      "server": "",
+      "server_port": 2052,
+      "uuid": "",
+      "packet_encoding": "xudp",
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2048",
+        "headers": {
+          "Host": ""
+        }
+      }
+    },
+    {
+      "type": "vless",
+      "tag": "cloudcone",
+      "server": "",
+      "server_port": 18454,
+      "uuid": "",
+      "flow": "xtls-rprx-vision",
+      "packet_encoding": "xudp",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "insecure": false,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "",
+          "short_id": ""
+        }
+      }
+    },
+    {
+      "type": "wireguard",
+      "tag": "warp+",
+      "server": "",
+      "server_port": 859,
+      "system_interface": false,
+      "gso": true,
+      "interface_name": "wan0",
+      "local_address": [
+        "172.16.0.2/32",
+        "2606:4700:110:8a63:3995:7c5e:8d4:e608/128"
+      ],
+      "private_key": "",
+      "peer_public_key": "",
+      "mtu": 1280
+    },
+    {
+      "type": "wireguard",
+      "tag": "warp6+",
+      "server": "",
+      "server_port": 1070,
+      "system_interface": false,
+      "gso": true,
+      "interface_name": "wan0",
+      "local_address": [
+        "172.16.0.2/32",
+        "2606:4700:110:8a63:3995:7c5e:8d4:e608/128"
+      ],
+      "private_key": "",
+      "peer_public_key": "",
+      "mtu": 1280
+    },
+    {
+      "type": "direct",
+      "tag": "net_direct"
+    },
+    {
+      "type": "block",
+      "tag": "net_block"
+    },
+    {
+      "type": "dns",
+      "tag": "dns-out"
+    },
+    {
+      "type": "urltest",
+      "tag": "urltest_custom",
+      "outbounds": [
+        "cloudcone",
+        "cfwp2"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "tolerance": 50,
+      "idle_timeout": "30m",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "urltest",
+      "tag": "urltest_warp",
+      "outbounds": [
+        "warp+",
+        "warp6+"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "tolerance": 50,
+      "idle_timeout": "30m",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_default",
+      "outbounds": [
+        "cloudcone",
+        "warp+",
+        "warp6+",
+        "cfwp2",
+        "urltest_warp",
+        "urltest_custom",
+        "net_direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_dns",
+      "outbounds": [
+        "cloudcone",
+        "warp+",
+        "warp6+",
+        "cfwp2",
+        "urltest_warp",
+        "urltest_custom",
+        "proxy_default"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_socks5",
+      "outbounds": [
+        "cloudcone",
+        "warp+",
+        "warp6+",
+        "cfwp2",
+        "urltest_warp",
+        "urltest_custom",
+        "proxy_default",
+        "net_direct"
+      ],
+      "default": "proxy_default",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_openai",
+      "outbounds": [
+        "cloudcone",
+        "warp+",
+        "warp6+",
+        "cfwp2",
+        "urltest_warp",
+        "urltest_custom",
+        "proxy_default",
+        "net_direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_google",
+      "outbounds": [
+        "cloudcone",
+        "warp+",
+        "warp6+",
+        "cfwp2",
+        "urltest_warp",
+        "urltest_custom",
+        "proxy_default"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    }
+  ],
+  "route": {
+    "rule_set": [
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-!cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-ad",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-ad.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-adblockplus",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-adblockplus.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-google.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-openai",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-openai.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-youtube",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-youtube.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-custom-direct",
+        "type": "local",
+        "format": "source",
+        "path": "/geodb/sing-custom/direct.json"
+      },
+      {
+        "tag": "geoip-custom-block",
+        "type": "local",
+        "format": "source",
+        "path": "/geodb/sing-custom/block.json"
+      }
+    ],
+    "rules": [
+      {
+        "inbound": "dns-in",
+        "outbound": "dns-out"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "net_direct"
+      },
+      {
+        "rule_set": [
+          "geoip-custom-direct"
+        ],
+        "outbound": "net_direct"
+      },
+      {
+        "rule_set": [
+          "geosite-adblockplus",
+          "geoip-ad",
+          "geoip-custom-block"
+        ],
+        "outbound": "net_block"
+      },
+      {
+        "inbound":[
+          "socks",
+          "http"
+        ],
+        "outbound": "proxy_socks5"
+      },
+      {
+        "rule_set": [
+          "geosite-cn",
+          "geoip-cn"
+        ],
+        "outbound": "net_direct"
+      },
+      {
+        "rule_set": [
+          "geosite-google",
+          "geosite-youtube"
+        ],
+        "outbound": "proxy_google"
+      },
+      {
+        "rule_set": [
+          "geosite-openai"
+        ],
+        "outbound": "proxy_openai"
+      }
+    ],
+    "final": "proxy_default",
+    "auto_detect_interface": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": false
+    },
+    "clash_api": {
+      "external_controller": "172.25.0.1:80",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",
+      "external_ui_download_detour": "proxy_default",
+      "secret": "",
+      "default_mode": ""
+    }
+  }
+}
