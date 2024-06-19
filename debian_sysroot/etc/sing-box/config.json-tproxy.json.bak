@@ -1,0 +1,314 @@
+{
+  "log": {
+    "disabled": false,
+    "level": "info",
+    "output": "",
+    "timestamp": true
+  },
+  "inbounds": [
+    {
+      "type": "tproxy",
+      "tag": "tproxy-in",
+      "listen": "::",
+      "listen_port": 10101,
+      "sniff": true
+    },
+    {
+      "type": "socks",
+      "tag": "socks-in",
+      "listen": "::",
+      "listen_port": 10808,
+      "sniff": true,
+      "sniff_override_destination": true
+    },
+    {
+      "type": "http",
+      "tag": "http-in",
+      "listen": "::",
+      "listen_port": 10809,
+      "sniff": true,
+      "sniff_override_destination": true
+    }
+  ],
+  "outbounds": [
+    {
+      "type": "vless",
+      "tag": "share0",
+      "server": "104.17.176.18",
+      "server_port": 443,
+      "uuid": "d9eb0df3-3190-4447-86b6-656fe5ff1119",
+      "packet_encoding": "xudp",
+      "tls": {
+        "enabled": true,
+        "server_name": "mmdv2.pages.dev",
+        "insecure": false
+      },
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2048",
+        "headers": {
+          "Host": "mmdv2.pages.dev"
+        }
+      },
+      "routing_mark": 255,
+      "detour": ""
+    },
+    {
+      "type": "vless",
+      "tag": "cfwp2",
+      "server": "acsg3.cloudflarest.link",
+      "server_port": 2052,
+      "uuid": "cf422b50-8e4c-4a08-84fc-7246fc4bf136",
+      "packet_encoding": "xudp",
+      "transport": {
+        "type": "ws",
+        "path": "/?ed=2048",
+        "headers": {
+          "Host": "cfwp2.1737261850wang.workers.dev"
+        }
+      },
+      "routing_mark": 255,
+      "detour": ""
+    },
+    {
+      "type": "vless",
+      "tag": "cloudcone",
+      "server": "2607:f130:0:160::8021:c03a",
+      "server_port": 18454,
+      "uuid": "7de93de5-62a1-4a8f-e3a9-c7b5e1d53167",
+      "flow": "xtls-rprx-vision",
+      "packet_encoding": "xudp",
+      "tls": {
+        "enabled": true,
+        "server_name": "www.cloudflare.com",
+        "insecure": false,
+        "utls": {
+          "enabled": true,
+          "fingerprint": "chrome"
+        },
+        "reality": {
+          "enabled": true,
+          "public_key": "R2gKMF0Tetlnesc1pPkZH9NaOeehw-f5_U9JKG_cLjU",
+          "short_id": ""
+        }
+      },
+      "routing_mark": 255,
+      "detour": ""
+    },
+    {
+      "type": "wireguard",
+      "tag": "warp+",
+      "server": "188.114.98.19",
+      "server_port": 1002,
+      "system_interface": false,
+      "gso": true,
+      "interface_name": "wg0",
+      "local_address": [
+        "172.16.0.2/32",
+        "2606:4700:110:8a63:3995:7c5e:8d4:e608/128"
+      ],
+      "private_key": "uJaeJ7RC4rM6AVZbMF0VCOzZi/V/IfIaVK4qnrlmt1M=",
+      "peer_public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+      "mtu": 1280
+    },
+    {
+      "type": "wireguard",
+      "tag": "warp6+",
+      "server": "2606:4700:d0::6ce0:6726:5042:67c6",
+      "server_port": 859,
+      "system_interface": false,
+      "gso": true,
+      "interface_name": "wg1",
+      "local_address": [
+        "172.16.0.2/32",
+        "2606:4700:110:8a63:3995:7c5e:8d4:e608/128"
+      ],
+      "private_key": "uJaeJ7RC4rM6AVZbMF0VCOzZi/V/IfIaVK4qnrlmt1M=",
+      "peer_public_key": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=",
+      "mtu": 1280
+    },
+    {
+      "type": "direct",
+      "tag": "net_direct"
+    },
+    {
+      "type": "block",
+      "tag": "net_block"
+    },
+    {
+      "type": "urltest",
+      "tag": "urltest_custom",
+      "outbounds": [
+        "cloudcone",
+        "cfwp2"
+      ],
+      "url": "https://www.gstatic.com/generate_204",
+      "interval": "3m",
+      "tolerance": 50,
+      "idle_timeout": "30m",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_default",
+      "outbounds": [
+        "share0",
+        "cloudcone",
+        "cfwp2",
+        "urltest_custom",
+        "net_direct"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_openai",
+      "outbounds": [
+        "cloudcone",
+        "cfwp2",
+        "urltest_custom",
+        "proxy_default"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    },
+    {
+      "type": "selector",
+      "tag": "proxy_google",
+      "outbounds": [
+        "cloudcone",
+        "cfwp2",
+        "urltest_custom",
+        "proxy_default"
+      ],
+      "default": "",
+      "interrupt_exist_connections": false
+    }
+  ],
+  "route": {
+    "rule_set": [
+      {
+        "tag": "geoip-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-!cn",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-geolocation-!cn.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geoip-ad",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geoip/rule-set/geoip-ad.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-adblockplus",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-adblockplus.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-google",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-google.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-openai",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-openai.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-youtube",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-youtube.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      },
+      {
+        "tag": "geosite-microsoft",
+        "type": "remote",
+        "format": "binary",
+        "url": "https://raw.githubusercontent.com/SagerNet/sing-geosite/rule-set/geosite-microsoft.srs",
+        "download_detour": "proxy_default",
+        "update_interval": "1d"
+      }
+    ],
+    "rules": [
+      {
+        "rule_set": [
+          "geosite-adblockplus",
+          "geoip-ad"
+        ],
+        "outbound": "net_block"
+      },
+      {
+        "ip_is_private": true,
+        "outbound": "net_direct"
+      },
+      {
+        "rule_set": [
+          "geosite-cn",
+          "geoip-cn"
+        ],
+        "outbound": "net_direct"
+      },
+      {
+        "rule_set": [
+          "geosite-google",
+          "geosite-youtube"
+        ],
+        "outbound": "proxy_google"
+      },
+      {
+        "rule_set": [
+          "geosite-openai"
+        ],
+        "outbound": "proxy_openai"
+      }
+    ],
+    "final": "proxy_default",
+    "auto_detect_interface": true
+  },
+  "experimental": {
+    "cache_file": {
+      "enabled": true,
+      "store_fakeip": false
+    },
+    "clash_api": {
+      "external_controller": "[::]:80",
+      "external_ui": "ui",
+      "external_ui_download_url": "https://github.com/MetaCubeX/Yacd-meta/archive/gh-pages.zip",
+      "external_ui_download_detour": "proxy_default",
+      "secret": "laputa",
+      "default_mode": ""
+    }
+  }
+}

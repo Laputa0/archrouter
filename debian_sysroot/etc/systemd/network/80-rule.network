@@ -1,0 +1,7 @@
+[Match]
+Name=*
+
+[RoutingPolicyRule]
+Priority=1000
+FirewallMark=0x01
+Table=100

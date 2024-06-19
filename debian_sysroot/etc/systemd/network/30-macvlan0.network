@@ -1,0 +1,7 @@
+[Match]
+Name=macvlan0
+
+[Route]
+Destination=172.25.0.2/32
+Scope=link
+

@@ -1,0 +1,6 @@
+[Match]
+Path=platform-3c0400000.pcie-pci-0001:01:00.0
+
+[Link]
+Name=lan0
+MACAddress=7e:f5:31:c5:da:34

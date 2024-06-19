@@ -1,0 +1,17 @@
+[Match]
+Name=lo
+Type=loopback
+
+[Network]
+Address=127.0.0.1/8
+Address=::1/128
+
+[Route]
+Type=local
+Table=100
+Destination=0.0.0.0/0
+
+[Route]
+Type=local
+Table=100
+Destination=::/0
