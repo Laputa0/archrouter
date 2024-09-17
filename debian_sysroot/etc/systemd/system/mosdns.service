@@ -1,0 +1,14 @@
+[Unit]
+Description=mosdns service
+Documentation=https://irine-sistiana.gitbook.io/mosdns-wiki
+After=network.target nss-lookup.target network-online.target
+
+[Service]
+ExecStart=/usr/bin/mosdns start -c /etc/mosdns/config.yaml
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=on-failure
+RestartSec=10s
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
