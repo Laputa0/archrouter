@@ -1,0 +1,15 @@
+[Unit]
+Description=alist service
+Documentation=https://alist.nn.ci/
+After=network.target nss-lookup.target network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/alist/
+ExecStart=/usr/bin/alist server
+Restart=on-failure
+RestartSec=10s
+LimitNOFILE=infinity
+
+[Install]
+WantedBy=multi-user.target
