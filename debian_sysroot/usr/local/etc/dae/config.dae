@@ -1,0 +1,77 @@
+global {
+    tproxy_port: 12345
+    tproxy_port_protect: true
+    pprof_port: 0
+    so_mark_from_dae: 0
+    log_level: info
+    disable_waiting_network: false
+    enable_local_tcp_fast_redirect: false
+
+    lan_interface: lan0
+    wan_interface: auto
+
+    auto_config_kernel_parameter: true
+    tcp_check_url: 'http://cp.cloudflare.com,1.1.1.1,2606:4700:4700::1111'
+    tcp_check_http_method: HEAD
+    udp_check_dns: 'dns.google.com:53,8.8.8.8,2001:4860:4860::8888'
+    check_interval: 30s
+    check_tolerance: 50ms
+
+    dial_mode: domain
+    allow_insecure: true
+    sniffing_timeout: 100ms
+    tls_implementation: tls
+    utls_imitate: chrome_auto
+}
+
+subscription {
+    # bigairport: 'https://www7.bigairport-seventeenth-sub.top/api/v1/client/subscribe?token=08cb90a35eb42cd70b2dfacfe1f8c2a3'
+}
+
+node {
+    cc1_hy2: 'hysteria2://user0:a7898da0-0fc5-4a72-a9ae-86d6c761e742@148.135.78.154:443/?sni=www.bing.com'
+    kds_hy2: 'hysteria2://user0:c2782977-c611-418b-98d0-9361418a7194@107.173.159.160:443/?sni=www.bing.com'
+}
+
+dns {
+    upstream {
+        mosdns: 'udp://127.0.0.1:53'
+    }
+    routing {
+        request {
+            fallback: mosdns
+        }
+    }
+}
+
+group {
+    all_nodes {
+        policy: min
+    }
+    my_hy2_nodes {
+        filter: name(cc1_hy2)
+        policy: min
+    }
+    hy2_nodes {
+        filter: name(cc1_hy2, kds_hy2)
+        policy: min
+    }
+}
+
+routing {
+    pname(mosdns) && l4proto(udp) && dport(53) -> direct(must)
+    dip(224.0.0.0/3, 'ff00::/8', geoip:private) -> direct
+    domain(geosite:category-games@cn) -> direct
+    dip(geoip:cn) -> direct
+    domain(geosite:cn) -> direct
+
+    domain(geosite:telegram) -> hy2_nodes
+    dip(geoip:telegram) -> hy2_nodes
+
+    domain(geosite:google) -> hy2_nodes
+    dip(geoip:google) -> hy2_nodes
+
+    domain(geosite:openai) -> hy2_nodes
+
+    fallback: my_hy2_nodes
+}

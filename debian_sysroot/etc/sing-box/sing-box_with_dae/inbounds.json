@@ -1,0 +1,20 @@
+{
+    "inbounds": [
+        {
+            "type": "socks",
+            "tag": "socks-in",
+            "listen": "::",
+            "listen_port": 10808,
+            "sniff": true,
+            "sniff_override_destination": false
+        },
+        {
+            "type": "http",
+            "tag": "http-in",
+            "listen": "::",
+            "listen_port": 10809,
+            "sniff": true,
+            "sniff_override_destination": false
+        }
+    ]
+}

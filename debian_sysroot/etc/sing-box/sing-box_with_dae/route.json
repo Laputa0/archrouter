@@ -1,0 +1,28 @@
+{
+  "route": {
+    "rules": [
+      {
+        "rule_set": [
+          "geosite-google",
+          "geosite-youtube"
+        ],
+        "outbound": "proxy_google"
+      },
+      {
+        "rule_set": [
+          "geosite-telegram",
+          "geoip-telegram"
+        ],
+        "outbound": "proxy_telegram"
+      },
+      {
+        "rule_set": [
+          "geosite-openai"
+        ],
+        "outbound": "proxy_openai"
+      }
+    ],
+    "final": "proxy_default",
+    "auto_detect_interface": true
+  }
+}
