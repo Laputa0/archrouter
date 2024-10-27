@@ -1,0 +1,16 @@
+### block
+domain(full: gmui-api.goss.xgimi.com) && mac('50:e4:78:31:14:a8') -> block
+
+### direct
+# local process
+pname(sing-box) -> direct(must)
+pname(mosnds) -> direct(must)
+#dscp(0x4) -> direct
+dip(224.0.0.0/3, 'ff00::/8', geoip:private) -> direct
+dip(geoip:cn) -> direct
+domain(geosite:cn) -> direct
+domain(suffix: romanticdatewith.me) -> direct
+domain(suffix: popads.net) -> direct
+
+### fallback
+fallback: proxy
