@@ -1,0 +1,10 @@
+[Unit]
+Description=Init Onboard LEDs
+After=local-fs.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/leds.sh
+
+[Install]
+WantedBy=multi-user.target

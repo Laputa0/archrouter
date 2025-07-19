@@ -1,0 +1,9 @@
+[Match]
+Path=platform-3c0800000.pcie-pci-0002:01:00.0
+
+[Link]
+Name=wan0
+MACAddress=a2:ec:c0:02:ed:a1
+
+[Network]
+DHCP=yes
