@@ -1,6 +1,6 @@
 [Unit]
 Description=Init Onboard LEDs
-After=local-fs.target
+After=local-fs.target network.target
 
 [Service]
 Type=oneshot
