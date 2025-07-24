@@ -1,9 +1,5 @@
 [Match]
 Path=platform-3c0000000.pcie-pci-0000:01:00.0
 
-[Link]
-Name=wlan0
-MACAddress=a2:ec:c0:02:ed:a3
-
 [Network]
 DHCP=yes

@@ -1,9 +1,6 @@
 [Match]
-Path=platform-3c0400000.pcie-pci-0001:01:00.0
-
-[Link]
 Name=lan0
-MACAddress=a2:ec:c0:02:ed:a2
+Path=platform-3c0400000.pcie-pci-0001:01:00.0
 
 [Network]
 Address=172.25.0.1/16

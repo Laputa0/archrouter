@@ -1,0 +1,6 @@
+[Match]
+Name=wan0
+Path=platform-3c0800000.pcie-pci-0002:01:00.0
+
+[Network]
+DHCP=yes
