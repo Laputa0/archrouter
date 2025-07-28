@@ -7,8 +7,10 @@ plugins:
     type: hosts
     args:
       entries:
-        - "archrouter.top 148.135.78.154 2607:f130:0:160::8021:c03a"
-        # - "popads.net 216.21.13.12 216.21.13.13"
+        - "ali.have1.fun 47.97.243.225"
+        - "hvh.have1.fun 172.245.11.26"
+        - "cc2.have1.fun 64.69.41.199 2607:f130:0:199::7b17:2d1e"
+        - "cc3.have1.fun 66.103.198.175 2607:f130:0:186::7625:f85f"
 
   # 拦截域名集合
   - tag: domain_block
@@ -25,6 +27,15 @@ plugins:
     args:
       files:
         - "/etc/mosdns/rules/direct-list.txt"
+
+  # lazy cache
+  - tag: lazy_cache
+    type: cache
+    args:
+      size: 8192
+      lazy_cache_ttl: 3600
+      dump_file: /etc/mosdns/cache.dump
+      dump_interval: 600
 
   # 直连域名转发器
   - tag: dns_direct
@@ -74,7 +85,7 @@ plugins:
       #   exec: reject 3
 
       # 域名缓存
-      - exec: cache 8192
+      - exec: $lazy_cache
       - matches: has_resp
         exec: mark 300
       - matches: mark 300
